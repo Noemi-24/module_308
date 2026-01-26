@@ -107,30 +107,55 @@ function getLearnerData(course, ag, submissions) {
 
     // TODO: Step 2 - Get current date to filter out future assignments
     const currentDate = new Date();
+    
 
     // TODO: Step 3 - Helper function to check if assignment is due
     function isAssignmentDue(assignment) {
-        // TODO: Return true if assignment.due_at <= currentDate
+        // TODO: Return true if assignment.due_at <= currentDate    
+        const dueDate = new Date(assignment.due_at);        
+        return dueDate <= currentDate;        
     }
 
     // TODO: Step 4 - Helper function to check if submission is late
     function isSubmissionLate(submission, assignment) {
         // TODO: Compare submission.submission.submitted_at with assignment.due_at
+        const submittedDate = new Date(submission.submission.submitted_at);
+        const dueDate = new Date(assignment.due_at);
+        return submittedDate > dueDate;
     }
 
     // TODO: Step 5 - Helper function to calculate final score (with late penalty if needed)
     function calculateFinalScore(submission, assignment) {
         // TODO: If late, subtract 10% of points_possible from score
+        let score = submission.submission.score;
+        if(isSubmissionLate(submission, assignment)){
+            score -= assignment.points_possible * 0.1;
+        }
+        return score;
     }
 
     // TODO: Step 6 - Helper function to find assignment by id
     function findAssignment(assignmentId) {
         // TODO: Search through ag.assignments to find matching id
+         for (const assignment of ag.assignments) {
+            if (assignment.id === assignmentId) {
+                return assignment;
+            }
+        }
+        return null;
     }
 
     // TODO: Step 7 - Get unique learner IDs from submissions
     function getUniqueLearnerIds() {
         // TODO: Extract unique learner_id values
+        const learnerIds = [];    
+        for (const submission of submissions) {
+            const learnerId = submission.learner_id;        
+            if (!learnerIds.includes(learnerId)) {
+                learnerIds.push(learnerId);
+            }
+        }    
+        return learnerIds;
     }
 
     // TODO: Step 8 - Main processing logic
